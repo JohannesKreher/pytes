@@ -1,0 +1,86 @@
+# ===============================
+# Python build / runtime files
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.log
+
+# ===============================
+# Virtual environments
+# ===============================
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# ===============================
+# SQLite databases and schema dumps
+# ===============================
+*.db
+*.sqlite3
+*.sqlite
+*.db-shm
+*.db-wal
+*.dump
+
+# ===============================
+# Encryption / secrets / credentials
+# ===============================
+*.key
+*.pem
+*.crt
+*.gpg
+*.enc
+secret.txt
+config.json        # falls du z.B. API-Keys speicherst
+masterkey.txt
+salt.bin
+
+# ===============================
+# OS / editor artifacts
+# ===============================
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+
+# ===============================
+# Backup / export files
+# ===============================
+*.bak
+*.old
+*.tmp
+*.zip
+*.tar.gz
+*.7z
+backup_*/
+
+# ===============================
+# IDE / tooling
+# ===============================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ===============================
+# Notes / sensitive content
+# ===============================
+notes_export/
+private_notes/
+scratchpad.txt
+
+# ===============================
+# Unit test / coverage outputs
+# ===============================
+htmlcov/
+.coverage
+.pytest_cache/
+.cache/
+nosetests.xml
+*.xml
