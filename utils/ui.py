@@ -1,18 +1,20 @@
 import getpass
 
-def login_screen()->str:
-    key = getpass.getpass('Password: ').strip()
-    return str(key)
+def login_screen()->bytes:
+    print('Logging in...')
+    password = getpass.getpass('Password: ').strip()
+    return password.encode()
 
-def register_screen()->str:
+def register_screen()->bytes:
+    print("Registering new account.")
     print("Ensure that you dont forget your password!")
     while True:
-        key = getpass.getpass('Password: ').strip()
-        key_confirm = getpass.getpass('Confirm Password: ').strip()
-        if key != key_confirm:
+        password = getpass.getpass('Password: ').strip()
+        password_confirm = getpass.getpass('Confirm Password: ').strip()
+        if password != password_confirm:
             print("Passwords don't match!")
             continue
         else:
-            return str(key)
+            return password.encode()
 
 
