@@ -1,5 +1,8 @@
+from random import choice
+import getpass, os
+
 from utils import apps
-import getpass, os, termcolor
+
 
 
 
@@ -7,7 +10,7 @@ import getpass, os, termcolor
 
 def menu():
     c()
-    print(termcolor.colored(logo, "cyan"))
+    print(RANDC + logo + ENDC)
     print("1 -> Write a note")
     print("2 -> Read a note")
     print("3 -> Search in notes")
@@ -47,6 +50,16 @@ logo = r"""
     ╚═╝        ╚═╝      ╚═╝   ╚══════╝╚══════╝
                 Pytes Notes CLI
     """
+bcolors = {
+    "MAGENTA": "\033[95m",
+    "BLUE": "\033[94m",
+    "CYAN": "\033[96m",
+    "GREEN": "\033[92m",
+    "YELLOW": "\033[93m",
+    "RED": "\033[91m"
+}
+ENDC = '\033[0m'
+RANDC = choice([c for n, c in bcolors.items()])
 
 
 

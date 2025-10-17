@@ -1,3 +1,2 @@
 cryptografy
-termcolor
 prompt-toolkit
