@@ -1,6 +1,5 @@
 from random import choice
 import getpass, os
-
 from utils import apps
 
 

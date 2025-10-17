@@ -1,5 +1,6 @@
 
 from prompt_toolkit import Application
+from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit
 from prompt_toolkit.widgets import TextArea, Button, Frame
 
@@ -27,6 +28,19 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
         submit_button,
     ])
 
-    app = Application(layout=Layout(write_a_note), mouse_support=True)
+    kb = KeyBindings()
+    @kb.add('tab')
+    def _(event):
+        event.app.layout.focus_next()
+
+    @kb.add('s-tab')
+    def _(event):
+        event.app.layout.focus_previous()
+
+    @kb.add('c-c')
+    def _(event):
+        raise KeyboardInterrupt
+
+    app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb)
     return app
 
