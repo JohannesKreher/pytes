@@ -1,11 +1,6 @@
-import getpass, os, termcolor, shutil
+import getpass, os, termcolor
 
 
-
-def get_entry_screen(query, line_char = "-"):
-    full_line(line_char)
-    entry = input(f"{query}: ")
-    return entry
 
 #_________________ login / register / menu
 
@@ -42,9 +37,6 @@ def register_screen()->bytes:
 #__________ intern recourses
 def c():
     os.system('clear')
-def full_line(chr:str):
-    columns = shutil.get_terminal_size().columns
-    print(chr * columns)
 logo = r"""
     ██████╗ ██╗   ██╗████████╗███████╗███████╗
     ██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝

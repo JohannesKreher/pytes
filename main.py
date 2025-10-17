@@ -24,13 +24,12 @@ def run():
         if opr == '4':
             raise KeyboardInterrupt
         elif opr == '1':
-            logic.write_note()
+            logic.write_a_note()
 
         elif opr == '2':
             pass
         elif opr == '3':
             pass
-
 
 
 

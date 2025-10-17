@@ -1,23 +1,20 @@
-from utils import ui
+from utils import apps
 
-
-def write_note():
-    theme, title, content = "", "", ""
+def write_a_note():
+    result = {"theme": "", "title": "", "content": ""}
     while True:
-        ui.c()
-        if theme:
-            ui.full_line("_")
-            print(f"Theme: {theme}")
-        if title:
-            ui.full_line("-")
-            print(f"Title: {title}")
-        if not theme: theme = ui.get_entry_screen("Theme", "_")
-        if not theme: continue
-        if not title: title = ui.get_entry_screen("Title", "-")
-        if not title: continue
-        content = ui.get_entry_screen("Content", "-")
-        if not content: continue
+        write_app = apps.write_a_note_app(result["theme"], result["title"], result["content"])
+        result = write_app.run()
+
+        if not result["theme"] or not result["title"] or not result["content"]:
+            print("fill in all fields!!!")
+            continue
+        print(result)
+
+
+
+        input("Press Enter to continue...")
         break
 
-#__________ intern recourses
+
 
