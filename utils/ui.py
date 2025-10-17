@@ -1,3 +1,4 @@
+from utils import apps
 import getpass, os, termcolor
 
 

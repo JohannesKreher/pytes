@@ -14,9 +14,9 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
         left_symbol="<",
         right_symbol=">",
         handler=lambda: app.exit(result={
-            "theme": theme.text,
-            "title": title.text,
-            "content": content.text
+            "theme": theme.text.strip(),
+            "title": title.text.strip(),
+            "content": content.text.strip()
         })
     )
 
@@ -29,3 +29,4 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
 
     app = Application(layout=Layout(write_a_note), mouse_support=True)
     return app
+
