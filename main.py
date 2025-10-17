@@ -1,4 +1,5 @@
-from utils import db_manager, ui, crypto
+from utils import db_manager, crypto, logic
+from utils.ui import menu, register_screen, login_screen
 from pathlib import Path
 
 
@@ -6,22 +7,29 @@ db_path = Path('db/nodes.db')
 
 def login():
     if not db_path.is_file():
-        password = ui.register_screen()
+        password = register_screen()
         db_manager.init_db(db_path)
         crypto.encrypt_db(db_path, password)
 
     while True:
-        password = ui.login_screen()
+        password = login_screen()
         if crypto.decrypt_db(db_path, password):
             break
     return password
 
-def run(password):
+def run():
+    while True:
+        opr = menu()
 
-    input("Press enter to continue...")
+        if opr == '4':
+            raise KeyboardInterrupt
+        elif opr == '1':
+            logic.write_note()
 
-
-
+        elif opr == '2':
+            pass
+        elif opr == '3':
+            pass
 
 
 
@@ -29,7 +37,7 @@ def run(password):
 if __name__ == '__main__':
     password = login()
     try:
-        run(password)
+        run()
         crypto.encrypt_db(db_path, password)
     except KeyboardInterrupt:
         print("\n\nExiting...")

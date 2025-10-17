@@ -84,3 +84,4 @@ htmlcov/
 .cache/
 nosetests.xml
 *.xml
+test.py
