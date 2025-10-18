@@ -1,5 +1,6 @@
 from random import choice
-import getpass, os
+from getpass import getpass
+import os
 from utils import apps
 
 
@@ -21,7 +22,7 @@ def menu():
 def login_screen()->bytes:
     c()
     print('Logging in...\n')
-    password = getpass.getpass('Password: ').strip()
+    password = getpass('Password: ').strip()
     return password.encode()
 
 def register_screen()->bytes:
@@ -29,8 +30,8 @@ def register_screen()->bytes:
     print("Registering new account.")
     print("Ensure that you dont forget your password!\n")
     while True:
-        password = getpass.getpass('Password: ').strip()
-        password_confirm = getpass.getpass('Confirm Password: ').strip()
+        password = getpass('Password: ').strip()
+        password_confirm = getpass('Confirm Password: ').strip()
         if password != password_confirm:
             print("Passwords don't match!")
             continue

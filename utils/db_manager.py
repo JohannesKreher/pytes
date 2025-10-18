@@ -17,3 +17,12 @@ def add_note(password, theme, title, content):
     con.commit()
     crypto.encrypt_db(password)
 
+def get_notes_by_theme(password)->list:
+    crypto.decrypt_db(password)
+    entries = cur.execute('SELECT theme, title, content FROM notes WHERE theme = (?)', ("cve",))
+    crypto.encrypt_db(password)
+    notes_list = entries.fetchall()
+    return notes_list
+
+
+

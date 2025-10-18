@@ -28,7 +28,8 @@ def run():
         elif opr == '1':
             logic.write_a_note(password)
         elif opr == '2':
-            pass
+            logic.select_a_note(password)
+            logic.read_a_note(password)
         elif opr == '3':
             pass
 
