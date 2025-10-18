@@ -21,7 +21,9 @@ def read_a_note(password: bytes):
     print(result)
 
 def select_a_note(password: bytes):
-    note_list = db_manager.get_notes_by_theme(password)
+    ui.c()
+    app = ui.apps.live_note_search_app()
+    app.run()
 
 
 
