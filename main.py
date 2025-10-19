@@ -1,20 +1,22 @@
 from utils import db_manager, crypto, logic
 from utils.ui import menu, register_screen, login_screen
+from utils.config import password, db_path
 from pathlib import Path
 
-db_path = Path('db/nodes.db')
+
 
 def login()->bytes:
+    global password
     if not db_path.is_file():
         password = register_screen()
-        db_manager.init_db(db_path)
+        db_manager.init_db()
         crypto.encrypt_db(password)
         return password
     else:
         while True:
             password = login_screen()
             if crypto.decrypt_db(password):
-                db_manager.init_db(db_path)
+                db_manager.init_db()
                 crypto.encrypt_db(password)
                 break
         return password

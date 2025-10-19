@@ -1,4 +1,4 @@
-from main import db_path
+from utils.config import db_path
 
 from cryptography.fernet import Fernet, InvalidToken
 from hashlib import pbkdf2_hmac

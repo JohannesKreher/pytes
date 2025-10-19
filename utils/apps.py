@@ -1,4 +1,5 @@
-
+from utils.config import password
+from utils.db_manager import get_notes_by_query
 
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
@@ -80,6 +81,8 @@ def live_note_search_app():
 
 
     result_label = Label("")
+
+
 
 # __________ root _____
     root = HSplit([

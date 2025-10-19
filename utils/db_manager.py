@@ -1,8 +1,9 @@
 from typing import Literal
 from utils import crypto
+from utils.config import db_path
 import sqlite3
 
-def init_db(db_path):
+def init_db():
     global con, cur
     con = sqlite3.connect(db_path)
     cur = con.cursor()
