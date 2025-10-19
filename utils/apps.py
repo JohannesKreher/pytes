@@ -1,4 +1,5 @@
 
+
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
@@ -6,8 +7,6 @@ from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, For
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
-
-
 
 def write_a_note_app(theme_content:str ="", title_content:str ="", content_content:str =""):
     theme, title, content = ttc_template(theme_content, title_content, content_content)
@@ -31,7 +30,7 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
     app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb, editing_mode=EditingMode.VI)
     return app
 
-def read_a_note_app(theme_content:str, title_content:str, content_content:str=""):
+def read_a_note_app(theme_content:str, title_content:str, content_content:str):
     theme, title, content = ttc_template(theme_content, title_content, content_content)
 
     def set_normal_mode():
@@ -64,68 +63,78 @@ def live_note_search_app():
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label("Live Note Search"), width=Dimension.exact(20)),
     ])
-
-    def get_dropdown(kb: KeyBindings):
-        options = ["Theme", "Title", "Content"]
-        selected_index = [0]
-        current_value = [options[selected_index[0]]]
-        display_label = Label(text=f"Filter: [{current_value[0]}]▼", width=Dimension.exact(20))
-        dropdown_open = [False]
-
-        def opt_lines():
-            lines = []
-            for i , opt in enumerate(options):
-                line = "        > " if i == selected_index[0] else "         "
-                lines.append(line + opt)
-            return "\n".join(lines)
-        def toggle_dropdown():
-            dropdown_open[0] = not dropdown_open[0]
-            app.invalidate()
-        def select_option():
-            current_value[0] = options[selected_index[0]]
-            display_label.text = f"Filter: [{current_value[0]}]▼"
-            dropdown_open[0] = False
-            app.invalidate()
-        dropdown_window = Window(content=FormattedTextControl(text=lambda: opt_lines()),height=len(options))
-        dropdown_menu = ConditionalContainer(content= dropdown_window, filter= Condition(lambda: dropdown_open[0]))
-
-        @kb.add("enter")
-        def _(event):
-            if not dropdown_open[0]:
-                toggle_dropdown()
-            else:
-                select_option()
-
-        @kb.add("up")
-        def _(event):
-            selected_index[0] = (selected_index[0] - 1) % len(options)
-
-        @kb.add("down")
-        def _(event):
-            selected_index[0] = (selected_index[0] + 1) % len(options)
-
-        return dropdown_menu, display_label, kb
-
-    dropdown_menu, display_label, kb = get_dropdown(kb)
-
+    def get_app():
+        return app
+    current_opt, dropdown_menu, dropdown_label, kb = get_dropdown_template(kb, get_app)
     dropdown_menu_line = VSplit([
         dropdown_menu,
     ])
 
+    search_text_area = TextArea(text="",width=Dimension.exact(20))
 
+    search_line = VSplit([
+        Label("Search: [", width=Dimension.exact(9)),
+        search_text_area,
+        Label("]", width=Dimension.exact(10))
+    ], height=1)
+
+
+    result_label = Label("")
 
 # __________ root _____
     root = HSplit([
+        Label("", width=Dimension.exact(10)),           # dummy container
         edit_title,
-        display_label,
+        dropdown_label,
         dropdown_menu_line,
+        search_line,
+        result_label,
     ])
 
     app = Application(layout=Layout(root), key_bindings=kb , mouse_support=True)
     return app
 
 #________Templates _______
+def get_dropdown_template(kb: KeyBindings, app)-> tuple[list[str], ConditionalContainer, Label, KeyBindings]: #  app = Application returning function
+    options = ["Theme", "Title", "Content"]
+    selected_index = [0]
+    current_value = [options[selected_index[0]]]
+    dropdown_label = Label(text=f"Filter: [{current_value[0]}]▼", width=Dimension.exact(20))
+    dropdown_open = [False]
 
+    def opt_lines():
+        lines = []
+        for i , opt in enumerate(options):
+            line = "        > " if i == selected_index[0] else "         "
+            lines.append(line + opt)
+        return "\n".join(lines)
+    def toggle_dropdown():
+        dropdown_open[0] = not dropdown_open[0]
+        app().invalidate()
+    def select_option():
+        current_value[0] = options[selected_index[0]]
+        dropdown_label.text = f"Filter: [{current_value[0]}]▼"
+        dropdown_open[0] = False
+        app().invalidate()
+    dropdown_window = Window(content=FormattedTextControl(text=lambda: opt_lines()),height=len(options))
+    dropdown_menu = ConditionalContainer(content= dropdown_window, filter= Condition(lambda: dropdown_open[0]))
+
+    @kb.add("enter")
+    def _(event):
+        if not dropdown_open[0]:
+            toggle_dropdown()
+        else:
+            select_option()
+
+    @kb.add("up")
+    def _(event):
+        selected_index[0] = (selected_index[0] - 1) % len(options)
+
+    @kb.add("down")
+    def _(event):
+        selected_index[0] = (selected_index[0] + 1) % len(options)
+
+    return current_value, dropdown_menu, dropdown_label, kb
 
 def ttc_template(theme_content:str = "",
                  title_content:str = "",

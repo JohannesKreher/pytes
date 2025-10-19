@@ -1,3 +1,4 @@
+from typing import Literal
 from utils import crypto
 import sqlite3
 
@@ -17,9 +18,9 @@ def add_note(password, theme, title, content):
     con.commit()
     crypto.encrypt_db(password)
 
-def get_notes_by_theme(password)->list:
+def get_notes_by_query(password, query: str, opt: Literal["theme", "title", "content"])->list:
     crypto.decrypt_db(password)
-    entries = cur.execute('SELECT theme, title, content FROM notes WHERE theme = (?)', ("cve",))
+    entries = cur.execute(f'SELECT theme, title, content FROM notes WHERE {opt} = (?)', ({query},))
     crypto.encrypt_db(password)
     notes_list = entries.fetchall()
     return notes_list
