@@ -108,18 +108,22 @@ def live_note_search_app():
             return
         opt = current_opt
         result_list = get_notes_by_query(query, opt[0])
+        i=0
 
         for theme, title, content in result_list:
-            theme_label = Label(text=f"Theme: {theme}", width=Dimension.exact(20))              # theme, title still neet a max length
+            if i+1 == current_position: position_marker = "   > "
+            elif current_position == 0: position_marker = ""
+            else: position_marker = "    "
+            theme_label = Label(text=f"{position_marker}Theme: {theme}", width=Dimension.exact(20))              # theme, title still neet a max length
             title_label = Label(text=f"Title: {title}", width=Dimension.exact(25))
             content_label = Label(text=f"content: {content}", width=Dimension.exact(35))
             note_line = VSplit([theme_label, title_label, content_label])
             result_container.children.append(note_line)
-
-
-
         app.invalidate()
     search_text_area.buffer.on_text_changed += search_text
+
+    # ________  key control / selecting the note _________
+    current_position = 1
 
 # _______ key binds____
     @kb.add("enter")
