@@ -3,9 +3,6 @@ from getpass import getpass
 import os
 from utils import apps
 
-
-
-
 #_________________ login / register / menu
 
 def menu():

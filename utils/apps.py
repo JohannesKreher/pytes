@@ -63,7 +63,7 @@ def live_note_search_app():
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
     ])
-
+# _________  dropdown menu_________
     options = ["Theme", "Title", "Content"]
     selected_index = [0]
     current_opt = [options[selected_index[0]]]
@@ -91,7 +91,7 @@ def live_note_search_app():
     dropdown_menu_line = VSplit([
         dropdown_menu,
     ])
-
+#__________ search logic __________
     search_text_area = TextArea(text="",width=Dimension.exact(20))
 
     search_line = VSplit([
@@ -100,14 +100,27 @@ def live_note_search_app():
         Label("]", width=Dimension.exact(10))
     ], height=1)
 
-    result_label = Label("")
+    result_container = HSplit([])
     def search_text(buffer):
+        result_container.children.clear()
         query = search_text_area.text
+        if len(query) <= 1:
+            return
         opt = current_opt
-        result = get_notes_by_query(query, opt[0])
-        result_label.text = str(result)
+        result_list = get_notes_by_query(query, opt[0])
+
+        for theme, title, content in result_list:
+            theme_label = Label(text=f"Theme: {theme}", width=Dimension.exact(20))              # theme, title still neet a max length
+            title_label = Label(text=f"Title: {title}", width=Dimension.exact(25))
+            content_label = Label(text=f"content: {content}", width=Dimension.exact(35))
+            note_line = VSplit([theme_label, title_label, content_label])
+            result_container.children.append(note_line)
+
+
+
         app.invalidate()
     search_text_area.buffer.on_text_changed += search_text
+
 # _______ key binds____
     @kb.add("enter")
     def _(event):
@@ -131,7 +144,7 @@ def live_note_search_app():
         dropdown_menu_line,
         search_line,
         Label("", width=Dimension.exact(10)),           # dummy container
-        result_label,
+        result_container,
     ])
 
     app = Application(layout=Layout(root), key_bindings=kb , mouse_support=False) # temporary false
