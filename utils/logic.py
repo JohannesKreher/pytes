@@ -1,7 +1,8 @@
 
 from utils import ui, db_manager
+from utils.config import get_password
 
-def write_a_note(password: bytes):
+def write_a_note():
     result = {"theme": "", "title": "", "content": ""}
     while True:
         write_app = ui.apps.write_a_note_app(result["theme"], result["title"], result["content"])
@@ -10,17 +11,17 @@ def write_a_note(password: bytes):
         if not result["theme"] or not result["title"] or not result["content"]:
             continue
 
-        db_manager.add_note(password, result["theme"], result["title"], result["content"])
+        db_manager.add_note(result["theme"], result["title"], result["content"])
         break
 
-def read_a_note(password: bytes):
+def read_a_note():
     original = {"theme": "", "title": "", "content": ""}
-    app = ui.apps.read_a_note_app("theme = test", "title, ", "asfklghaljghasdilfhglakdfjghdilfahg\nsdgasg\nadfd")
+    app = ui.apps.read_a_note_app("theme = test", "title, ", "afjghdilfahg\nsdgasg\nadfd")
     ui.c()
     result = app.run()
     print(result)
 
-def select_a_note(password: bytes):
+def select_a_note():
     ui.c()
     app = ui.apps.live_note_search_app()
     app.run()

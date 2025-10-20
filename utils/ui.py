@@ -15,7 +15,6 @@ def menu():
     print("2 -> Read a note")
     print("3 -> Search in notes")
     print("4 -> Exit")
-
     choice = input("\n\n-> ")
     return choice
 

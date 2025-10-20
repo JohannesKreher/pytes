@@ -1,25 +1,23 @@
 from utils import db_manager, crypto, logic
 from utils.ui import menu, register_screen, login_screen
-from utils.config import password, db_path
-from pathlib import Path
+from utils.config import db_path, set_password, get_password
 
 
 
 def login()->bytes:
-    global password
     if not db_path.is_file():
-        password = register_screen()
+        new_password = register_screen()
+        set_password(new_password)
         db_manager.init_db()
-        crypto.encrypt_db(password)
-        return password
+        crypto.encrypt_db(get_password())
     else:
         while True:
-            password = login_screen()
-            if crypto.decrypt_db(password):
+            new_password = login_screen()
+            set_password(new_password)
+            if crypto.decrypt_db(get_password()):
                 db_manager.init_db()
-                crypto.encrypt_db(password)
+                crypto.encrypt_db(get_password())
                 break
-        return password
 
 def run():
     while True:
@@ -28,9 +26,9 @@ def run():
         if opr == '4':
             raise KeyboardInterrupt
         elif opr == '1':
-            logic.write_a_note(password)
+            logic.write_a_note()
         elif opr == '2':
-            logic.select_a_note(password)
+            logic.select_a_note()
             #logic.read_a_note(password)
         elif opr == '3':
             pass
@@ -38,7 +36,7 @@ def run():
 
 if __name__ == '__main__':
     try:
-        password = login()
+        login()
         run()
     except KeyboardInterrupt:
         print("\n\nExiting...")

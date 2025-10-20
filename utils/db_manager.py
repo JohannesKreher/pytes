@@ -1,6 +1,6 @@
 from typing import Literal
 from utils import crypto
-from utils.config import db_path
+from utils.config import db_path, get_password
 import sqlite3
 
 def init_db():
@@ -13,16 +13,18 @@ def init_db():
     cur.executescript(schema)
     con.commit()
 
-def add_note(password, theme, title, content):
-    crypto.decrypt_db(password)
+def add_note(theme, title, content):
+    crypto.decrypt_db(get_password())
     cur.execute('INSERT INTO notes (theme, title, content) VALUES (?, ?, ?)', (theme, title, content))
     con.commit()
-    crypto.encrypt_db(password)
+    crypto.encrypt_db(get_password())
 
-def get_notes_by_query(password, query: str, opt: Literal["theme", "title", "content"])->list:
-    crypto.decrypt_db(password)
-    entries = cur.execute(f'SELECT theme, title, content FROM notes WHERE {opt} = (?)', ({query},))
-    crypto.encrypt_db(password)
+def get_notes_by_query(query: str, opt: Literal["Theme", "Title", "Content"])->list:
+    opt = opt.lower()
+    crypto.decrypt_db(get_password())
+    sql = f"SELECT theme, title, content FROM notes WHERE {opt} LIKE ?;"
+    entries = cur.execute(sql, (f"%{query}%",))
+    crypto.encrypt_db(get_password())
     notes_list = entries.fetchall()
     return notes_list
 

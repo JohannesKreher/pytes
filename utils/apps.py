@@ -1,4 +1,3 @@
-from utils.config import password
 from utils.db_manager import get_notes_by_query
 
 from prompt_toolkit import Application
@@ -62,11 +61,33 @@ def live_note_search_app():
     kb = keybinds_template()
     edit_title = VSplit([
         Label("", width=Dimension.exact(10)),         # dummy container
-        Frame(body=Label("Live Note Search"), width=Dimension.exact(20)),
+        Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
     ])
-    def get_app():
-        return app
-    current_opt, dropdown_menu, dropdown_label, kb = get_dropdown_template(kb, get_app)
+
+    options = ["Theme", "Title", "Content"]
+    selected_index = [0]
+    current_opt = [options[selected_index[0]]]
+    dropdown_label = Label(text=f"Filter: [{current_opt[0]}]▼", width=Dimension.exact(20))
+    dropdown_open = [False]
+
+    def opt_lines():
+        lines = []
+        for i, opt in enumerate(options):
+            line = "        > " if i == selected_index[0] else "         "
+            lines.append(line + opt)
+        return "\n".join(lines)
+    def toggle_dropdown():
+        dropdown_open[0] = not dropdown_open[0]
+        app.invalidate()
+    def select_option():
+        current_opt[0] = options[selected_index[0]]
+        dropdown_label.text = f"Filter: [{current_opt[0]}]▼"
+        dropdown_open[0] = False
+        app.invalidate()
+
+    dropdown_window = Window(content=FormattedTextControl(text=lambda: opt_lines()), height=len(options))
+    dropdown_menu = ConditionalContainer(content=dropdown_window, filter=Condition(lambda: dropdown_open[0]))
+
     dropdown_menu_line = VSplit([
         dropdown_menu,
     ])
@@ -79,49 +100,15 @@ def live_note_search_app():
         Label("]", width=Dimension.exact(10))
     ], height=1)
 
-
     result_label = Label("")
-
-
-
-# __________ root _____
-    root = HSplit([
-        Label("", width=Dimension.exact(10)),           # dummy container
-        edit_title,
-        dropdown_label,
-        dropdown_menu_line,
-        search_line,
-        result_label,
-    ])
-
-    app = Application(layout=Layout(root), key_bindings=kb , mouse_support=True)
-    return app
-
-#________Templates _______
-def get_dropdown_template(kb: KeyBindings, app)-> tuple[list[str], ConditionalContainer, Label, KeyBindings]: #  app = Application returning function
-    options = ["Theme", "Title", "Content"]
-    selected_index = [0]
-    current_value = [options[selected_index[0]]]
-    dropdown_label = Label(text=f"Filter: [{current_value[0]}]▼", width=Dimension.exact(20))
-    dropdown_open = [False]
-
-    def opt_lines():
-        lines = []
-        for i , opt in enumerate(options):
-            line = "        > " if i == selected_index[0] else "         "
-            lines.append(line + opt)
-        return "\n".join(lines)
-    def toggle_dropdown():
-        dropdown_open[0] = not dropdown_open[0]
-        app().invalidate()
-    def select_option():
-        current_value[0] = options[selected_index[0]]
-        dropdown_label.text = f"Filter: [{current_value[0]}]▼"
-        dropdown_open[0] = False
-        app().invalidate()
-    dropdown_window = Window(content=FormattedTextControl(text=lambda: opt_lines()),height=len(options))
-    dropdown_menu = ConditionalContainer(content= dropdown_window, filter= Condition(lambda: dropdown_open[0]))
-
+    def search_text(buffer):
+        query = search_text_area.text
+        opt = current_opt
+        result = get_notes_by_query(query, opt[0])
+        result_label.text = str(result)
+        app.invalidate()
+    search_text_area.buffer.on_text_changed += search_text
+# _______ key binds____
     @kb.add("enter")
     def _(event):
         if not dropdown_open[0]:
@@ -132,12 +119,25 @@ def get_dropdown_template(kb: KeyBindings, app)-> tuple[list[str], ConditionalCo
     @kb.add("up")
     def _(event):
         selected_index[0] = (selected_index[0] - 1) % len(options)
-
     @kb.add("down")
     def _(event):
         selected_index[0] = (selected_index[0] + 1) % len(options)
 
-    return current_value, dropdown_menu, dropdown_label, kb
+    # __________ root _____
+    root = HSplit([
+        Label("", width=Dimension.exact(10)),           # dummy container
+        edit_title,
+        dropdown_label,
+        dropdown_menu_line,
+        search_line,
+        Label("", width=Dimension.exact(10)),           # dummy container
+        result_label,
+    ])
+
+    app = Application(layout=Layout(root), key_bindings=kb , mouse_support=False) # temporary false
+    return app
+
+#________Templates _______
 
 def ttc_template(theme_content:str = "",
                  title_content:str = "",
