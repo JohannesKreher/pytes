@@ -22,7 +22,7 @@ def add_note(theme, title, content):
 def get_notes_by_query(query: str, opt: Literal["Theme", "Title", "Content"])->list:
     opt = opt.lower()
     crypto.decrypt_db(get_password())
-    sql = f"SELECT theme, title, content FROM notes WHERE {opt} LIKE ?;"
+    sql = f"SELECT id, theme, title, content FROM notes WHERE {opt} LIKE ?;"
     entries = cur.execute(sql, (f"%{query}%",))
     crypto.encrypt_db(get_password())
     notes_list = entries.fetchall()

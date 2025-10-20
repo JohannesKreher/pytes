@@ -100,6 +100,9 @@ def live_note_search_app():
         Label("]", width=Dimension.exact(10))
     ], height=1)
 
+    current_position = [-1]
+    result_notes_list = []
+
     result_container = HSplit([])
     def search_text(buffer):
         result_container.children.clear()
@@ -108,37 +111,66 @@ def live_note_search_app():
             return
         opt = current_opt
         result_list = get_notes_by_query(query, opt[0])
-        i=0
+        result_notes_list.append(result_list)
 
-        for theme, title, content in result_list:
-            if i+1 == current_position: position_marker = "   > "
-            elif current_position == 0: position_marker = ""
-            else: position_marker = "    "
-            theme_label = Label(text=f"{position_marker}Theme: {theme}", width=Dimension.exact(20))              # theme, title still neet a max length
-            title_label = Label(text=f"Title: {title}", width=Dimension.exact(25))
-            content_label = Label(text=f"content: {content}", width=Dimension.exact(35))
-            note_line = VSplit([theme_label, title_label, content_label])
-            result_container.children.append(note_line)
+        for i, note in enumerate(result_list):
+            mark_lines(i, note)
         app.invalidate()
-    search_text_area.buffer.on_text_changed += search_text
 
-    # ________  key control / selecting the note _________
-    current_position = 1
+    def mark_lines(i, note):
+        id, theme, title, content = note
+        if i == current_position[0]: position_marker = "   > "
+        else: position_marker = "    "
+        theme_label = Label(text=f"{position_marker}Theme: {theme}", width=Dimension.exact(20))  # theme, title still neet a max length
+        title_label = Label(text=f"Title: {title}", width=Dimension.exact(25))
+        content_label = Label(text=f"content: {content}", width=Dimension.exact(35))
+        note_line = VSplit([theme_label, title_label, content_label])
+        result_container.children.append(note_line)
+
+    search_text_area.buffer.on_text_changed += search_text
 
 # _______ key binds____
     @kb.add("enter")
     def _(event):
-        if not dropdown_open[0]:
-            toggle_dropdown()
-        else:
-            select_option()
-
+        try:
+            id, theme, title, content = result_notes_list[0][current_position[0]]
+            app.exit(result={
+                id,
+                theme,
+                title,
+                content,
+            })
+        except IndexError:
+            if not dropdown_open[0]:
+                toggle_dropdown()
+            else:
+                select_option()
     @kb.add("up")
     def _(event):
-        selected_index[0] = (selected_index[0] - 1) % len(options)
+        if dropdown_open[0]:
+            selected_index[0] = (selected_index[0] - 1) % len(options)
+        else:
+            if len(result_container.children) == 0:
+                current_position[0] = 0
+            else:
+                current_position[0] = (current_position[0] - 1) % (len(result_container.children)+1)
+                result_container.children.clear()
+                for i, note in enumerate(result_notes_list[0]):
+                    mark_lines(i, note)
+                app.invalidate()
     @kb.add("down")
     def _(event):
-        selected_index[0] = (selected_index[0] + 1) % len(options)
+        if dropdown_open[0]:
+            selected_index[0] = (selected_index[0] + 1) % len(options)
+        else:
+            if len(result_container.children) == 0:
+                current_position[0] = 0
+            else:
+                current_position[0] = (current_position[0] + 1) % (len(result_container.children)+1)
+                result_container.children.clear()
+                for i, note in enumerate(result_notes_list[0]):
+                    mark_lines(i, note)
+                app.invalidate()
 
     # __________ root _____
     root = HSplit([

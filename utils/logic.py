@@ -24,7 +24,9 @@ def read_a_note():
 def select_a_note():
     ui.c()
     app = ui.apps.live_note_search_app()
-    app.run()
+    result = app.run()
+    print(result)
+    input("Press enter to continue...")
 
 
 
