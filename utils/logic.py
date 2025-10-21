@@ -16,16 +16,18 @@ def write_a_note():
 
 def update_a_note():
     ui.c()
-    app = ui.apps.live_note_search_app()
-    target_note = app.run()
-    id, theme, title, content = target_note["id"], target_note["theme"], target_note["title"], target_note["content"]
+    search_app = ui.apps.live_note_search_app()
+    target_note = search_app.run()
+    id = target_note["id"]
+
+    new_note = {"theme": target_note["theme"], "title": target_note["title"], "content": target_note["content"]}
 
     while True:
+        read_app = ui.apps.edit_a_note_app(new_note["theme"], new_note["title"], new_note["content"])
         ui.c()
-        app = ui.apps.read_a_note_app(theme, title, content)
-        new_theme, new_title, new_content = app.run()
-        if new_theme and new_title and new_content:
-            db_manager.update_a_note(id, new_theme, new_title, new_content)
+        new_note = read_app.run()
+        if new_note["theme"] and new_note["title"] and new_note["content"]:
+            db_manager.update_a_note(id, new_note["theme"], new_note["title"], new_note["content"])
             break
 
 

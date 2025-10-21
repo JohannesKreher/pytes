@@ -30,7 +30,7 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
     app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb, editing_mode=EditingMode.VI)
     return app
 
-def read_a_note_app(theme_content:str, title_content:str, content_content:str):
+def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     theme, title, content = ttc_template(theme_content, title_content, content_content)
 
     def set_normal_mode():
@@ -47,9 +47,9 @@ def read_a_note_app(theme_content:str, title_content:str, content_content:str):
         })
     )
 
-    layout = HSplit([Frame(body=theme, title="Theme"),
-                     Frame(body=title, title="Title"),
-                     Frame(body=content, title="Content"),
+    layout = HSplit([Frame(body=theme),
+                     Frame(body=title),
+                     Frame(body=content),
                      fin])
 
     kb = keybinds_template()
