@@ -30,7 +30,13 @@ def run():
         elif opr == '2':
             logic.update_a_note()
         elif opr == '3':
-            db_manager.d_encrypt_db()
+            crypto.decrypt_db(get_password())
+            try:
+                input("ready to re-encrypt db??")
+            except KeyboardInterrupt:
+                crypto.encrypt_db(get_password())
+                raise KeyboardInterrupt
+            crypto.encrypt_db(get_password())
 
 
 if __name__ == '__main__':

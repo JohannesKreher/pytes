@@ -3,12 +3,6 @@ from utils import crypto
 from utils.config import db_path, get_password
 import sqlite3
 
-def d_encrypt_db():
-    c = input("d for decrypt || e for encrypt -> ")
-    if c == "d":
-        crypto.decrypt_db(get_password())
-    elif c == "e":
-        crypto.encrypt_db(get_password())
 
 def init_db():
     global con, cur

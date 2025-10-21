@@ -14,13 +14,6 @@ def write_a_note():
         db_manager.add_note(result["theme"], result["title"], result["content"])
         break
 
-def read_a_note():
-    original = {"theme": "", "title": "", "content": ""}
-    app = ui.apps.read_a_note_app("theme = test", "title, ", "afjghdilfahg\nsdgasg\nadfd")
-    ui.c()
-    result = app.run()
-    print(result)
-
 def update_a_note():
     ui.c()
     app = ui.apps.live_note_search_app()
