@@ -21,12 +21,25 @@ def read_a_note():
     result = app.run()
     print(result)
 
-def select_a_note():
+def update_a_note():
     ui.c()
     app = ui.apps.live_note_search_app()
-    result = app.run()
-    print(result)
-    input("Press enter to continue...")
+    target_note = app.run()
+    id, theme, title, content = target_note["id"], target_note["theme"], target_note["title"], target_note["content"]
+
+    while True:
+        ui.c()
+        app = ui.apps.read_a_note_app(theme, title, content)
+        new_theme, new_title, new_content = app.run()
+        if new_theme and new_title and new_content:
+            db_manager.update_a_note(id, new_theme, new_title, new_content)
+            break
+
+
+
+
+
+
 
 
 

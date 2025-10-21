@@ -107,8 +107,8 @@ def live_note_search_app():
     def search_text(buffer):
         result_container.children.clear()
         query = search_text_area.text
-        if len(query) <= 1:
-            return
+        #if len(query) <= 1:
+            #return
         opt = current_opt
         result_list = get_notes_by_query(query, opt[0])
         result_notes_list.clear()
@@ -136,10 +136,10 @@ def live_note_search_app():
         if current_position[0] in range(0, len(result_container.children)):
             id, theme, title, content = result_notes_list[0][current_position[0]]
             app.exit(result={
-                id,
-                theme,
-                title,
-                content,
+                "id":id,
+                "theme":theme,
+                "title":title,
+                "content":content,
             })
         else:
             if not dropdown_open[0]:
@@ -179,6 +179,7 @@ def live_note_search_app():
         edit_title,
         dropdown_label,
         dropdown_menu_line,
+        Label("", width=Dimension.exact(10)),           # dummy container
         search_line,
         Label("", width=Dimension.exact(10)),           # dummy container
         result_container,

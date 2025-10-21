@@ -10,7 +10,7 @@ def menu():
     print(RANDC + logo + ENDC)
     print("1 -> Write a note")
     print("2 -> Read a note")
-    print("3 -> Search in notes")
+    print("3 -> en-or-decrypt")
     print("4 -> Exit")
     choice = input("\n\n-> ")
     return choice

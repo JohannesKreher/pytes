@@ -2,7 +2,7 @@ from utils import db_manager, crypto, logic
 from utils.ui import menu, register_screen, login_screen
 from utils.config import db_path, set_password, get_password
 
-
+import test
 
 def login()->bytes:
     if not db_path.is_file():
@@ -28,10 +28,9 @@ def run():
         elif opr == '1':
             logic.write_a_note()
         elif opr == '2':
-            logic.select_a_note()
-            #logic.read_a_note(password)
+            logic.update_a_note()
         elif opr == '3':
-            pass
+            db_manager.d_encrypt_db()
 
 
 if __name__ == '__main__':

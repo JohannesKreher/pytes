@@ -3,6 +3,13 @@ from utils import crypto
 from utils.config import db_path, get_password
 import sqlite3
 
+def d_encrypt_db():
+    c = input("d for decrypt || e for encrypt -> ")
+    if c == "d":
+        crypto.decrypt_db(get_password())
+    elif c == "e":
+        crypto.encrypt_db(get_password())
+
 def init_db():
     global con, cur
     con = sqlite3.connect(db_path)
@@ -16,6 +23,13 @@ def init_db():
 def add_note(theme, title, content):
     crypto.decrypt_db(get_password())
     cur.execute('INSERT INTO notes (theme, title, content) VALUES (?, ?, ?)', (theme, title, content))
+    con.commit()
+    crypto.encrypt_db(get_password())
+
+def update_a_note(id, theme, title, content):
+    sql = "UPDATE notes SET theme = (?), title = (?), content = (?) WHERE id = (?)"
+    crypto.decrypt_db(get_password())
+    cur.execute(sql, (theme, title, content, id))
     con.commit()
     crypto.encrypt_db(get_password())
 
