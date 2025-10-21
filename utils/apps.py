@@ -1,4 +1,5 @@
-from utils.db_manager import get_notes_by_query
+from utils.db_manager import get_notes_by_query, delete_note
+from utils.config import search_not_by_only_one_char
 
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
@@ -107,10 +108,12 @@ def live_note_search_app():
     def search_text(buffer):
         result_container.children.clear()
         query = search_text_area.text
-        #if len(query) <= 1:
-            #return
+        if len(query) <= 1 and search_not_by_only_one_char:
+            return
         opt = current_opt
-        result_list = get_notes_by_query(query, opt[0])
+        if query:
+            result_list = get_notes_by_query(query, opt[0])
+        else: result_list = []
         result_notes_list.clear()
         result_notes_list.append(result_list)
 
@@ -146,6 +149,19 @@ def live_note_search_app():
                 toggle_dropdown()
             else:
                 select_option()
+    @kb.add("escape")
+    def _(event):
+        app.exit()
+    @kb.add("c-d")
+    def _(event):
+        if current_position[0] in range(0, len(result_container.children)):
+            id, _, _, _ = result_notes_list[0][current_position[0]]
+            del result_notes_list[0][current_position[0]]
+            result_container.children.clear()
+            for i, note in enumerate(result_notes_list[0]):
+                mark_lines(i, note)
+            app.invalidate()
+            delete_note(id)
     @kb.add("up")
     def _(event):
         if dropdown_open[0]:
@@ -182,10 +198,11 @@ def live_note_search_app():
         Label("", width=Dimension.exact(10)),           # dummy container
         search_line,
         Label("", width=Dimension.exact(10)),           # dummy container
+        Label("Results:", width=Dimension.exact(10)),
         result_container,
     ])
 
-    app = Application(layout=Layout(root), key_bindings=kb , mouse_support=False) # temporary false
+    app = Application(layout=Layout(root), key_bindings=kb , editing_mode=EditingMode.VI) # temporary false
     return app
 
 #________Templates _______

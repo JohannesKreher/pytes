@@ -3,6 +3,13 @@ from getpass import getpass
 import os
 from utils import apps
 
+
+
+def print_info():
+    c()
+    print(info)
+    input("\npress enter to continue...")
+
 #_________________ login / register / menu
 
 def menu():
@@ -11,7 +18,8 @@ def menu():
     print("1 -> Write a note")
     print("2 -> Edit a note")
     print("3 -> Decrypt-db")
-    print("4 -> Exit")
+    print("4 -> Hints")
+    print("5 -> Exit")
     choice = input("\n\n-> ")
     return choice
 
@@ -56,6 +64,11 @@ bcolors = {
 }
 ENDC = '\033[0m'
 RANDC = choice([c for n, c in bcolors.items()])
+info = ("_ _ _/The Hints you ware searching for\_ _ _\n"
+            "\n"
+            "* Support on all inputs, except the menu, with VIM like movement.\n"
+            "* ctrl-d to delete a note.\n"
+            "* there is a smale conf file on utils/config.py\n")
 
 
 
