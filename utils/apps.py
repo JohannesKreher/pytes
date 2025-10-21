@@ -111,6 +111,7 @@ def live_note_search_app():
             return
         opt = current_opt
         result_list = get_notes_by_query(query, opt[0])
+        result_notes_list.clear()
         result_notes_list.append(result_list)
 
         for i, note in enumerate(result_list):
@@ -132,7 +133,7 @@ def live_note_search_app():
 # _______ key binds____
     @kb.add("enter")
     def _(event):
-        try:
+        if current_position[0] in range(0, len(result_container.children)):
             id, theme, title, content = result_notes_list[0][current_position[0]]
             app.exit(result={
                 id,
@@ -140,7 +141,7 @@ def live_note_search_app():
                 title,
                 content,
             })
-        except IndexError:
+        else:
             if not dropdown_open[0]:
                 toggle_dropdown()
             else:
