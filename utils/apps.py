@@ -4,18 +4,20 @@ from utils.config import search_not_by_only_one_char, edit_mode
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, FormattedTextControl
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
 
 if edit_mode == "EMACS":
-    edit_mode = EditingMode.EMACS
-else: edit_mode = EditingMode.VI
+    conf_edit_mode = EditingMode.EMACS
+else: conf_edit_mode = EditingMode.VI
 
 def write_a_note_app(theme_content:str ="", title_content:str ="", content_content:str =""):
     def get_app():
         return app
+
     theme, title, content = ttc_template(theme_content, title_content, content_content)
     submit_button = Button(
         text="Submit",
@@ -27,15 +29,29 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
             "content": content.text.strip()
         })
     )
-    write_a_note = HSplit([
+    #________  Layout _____
+    def get_curr_edit_mode():
+        if edit_mode == "EMACS": text = edit_mode
+        else: text = f"VI - {app.vi_state.input_mode.name}"
+        return text
+    curr_mode_info = VSplit([
+        Label(text="Mode: ", width=Dimension.exact(6)),
+        Window(content=FormattedTextControl(text=lambda: get_curr_edit_mode()), width=Dimension.exact(16))
+    ])
+    tail_line = VSplit([
+        curr_mode_info,
+        submit_button,
+    ])
+
+    root = HSplit([
         Frame(body=theme),
         Frame(body=title),
         Frame(body=content),
-        submit_button,
+        tail_line,
     ])
     kb = keybinds_template(lambda: get_app())
 
-    app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb, editing_mode=edit_mode)
+    app = Application(layout=Layout(root), mouse_support=True, key_bindings=kb, editing_mode=conf_edit_mode)
     return app
 
 def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
@@ -43,7 +59,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     def get_app():
         return app
     def set_normal_mode():
-        app.vi_state.input_mode = app.vi_state.input_mode.NAVIGATION #set textareas in vim-normal mode
+        app.vi_state.input_mode = app.vi_state.input_mode.NAVIGATION
 
     save_changes = Button(
         text="save changes",
@@ -62,7 +78,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
                      save_changes])
 
     kb = keybinds_template(lambda: get_app())
-    app = Application(layout=Layout(layout), mouse_support=True, key_bindings=kb, editing_mode=edit_mode)
+    app = Application(layout=Layout(layout), mouse_support=True, key_bindings=kb, editing_mode=conf_edit_mode)
     app.pre_run_callables.append(set_normal_mode)
     return app
 
