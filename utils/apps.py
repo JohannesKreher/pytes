@@ -1,5 +1,5 @@
 from utils.db_manager import get_notes_by_query, delete_note
-from utils.config import search_not_by_only_one_char
+from utils.config import search_not_by_only_one_char, edit_mode
 
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
@@ -9,7 +9,13 @@ from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
 
+if edit_mode == "EMACS":
+    edit_mode = EditingMode.EMACS
+else: edit_mode = EditingMode.VI
+
 def write_a_note_app(theme_content:str ="", title_content:str ="", content_content:str =""):
+    def get_app():
+        return app
     theme, title, content = ttc_template(theme_content, title_content, content_content)
     submit_button = Button(
         text="Submit",
@@ -27,18 +33,20 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
         Frame(body=content),
         submit_button,
     ])
-    kb = keybinds_template()
-    app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb, editing_mode=EditingMode.VI)
+    kb = keybinds_template(lambda: get_app())
+
+    app = Application(layout=Layout(write_a_note), mouse_support=True, key_bindings=kb, editing_mode=edit_mode)
     return app
 
 def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     theme, title, content = ttc_template(theme_content, title_content, content_content)
-
+    def get_app():
+        return app
     def set_normal_mode():
         app.vi_state.input_mode = app.vi_state.input_mode.NAVIGATION #set textareas in vim-normal mode
 
-    fin = Button(
-        text="finish",
+    save_changes = Button(
+        text="save changes",
         left_symbol="<",
         right_symbol=">",
         handler=lambda: app.exit(result={
@@ -51,15 +59,17 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     layout = HSplit([Frame(body=theme),
                      Frame(body=title),
                      Frame(body=content),
-                     fin])
+                     save_changes])
 
-    kb = keybinds_template()
-    app = Application(layout=Layout(layout), mouse_support=True, key_bindings=kb, editing_mode=EditingMode.VI)
+    kb = keybinds_template(lambda: get_app())
+    app = Application(layout=Layout(layout), mouse_support=True, key_bindings=kb, editing_mode=edit_mode)
     app.pre_run_callables.append(set_normal_mode)
     return app
 
 def live_note_search_app():
-    kb = keybinds_template()
+    def get_app():
+        return app
+    kb = keybinds_template(lambda: get_app())
     edit_title = VSplit([
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
@@ -149,7 +159,7 @@ def live_note_search_app():
                 toggle_dropdown()
             else:
                 select_option()
-    @kb.add("escape")
+    @kb.add("c-e")
     def _(event):
         app.exit()
     @kb.add("c-d")
@@ -217,19 +227,20 @@ def ttc_template(theme_content:str = "",
     content = TextArea(text=content_content, prompt=f"Content: ", read_only=readonly, focus_on_click=True)
     return theme, title, content
 
-def keybinds_template():
+def keybinds_template(app):      # app = app returning function
     kb = KeyBindings()
 
     @kb.add('tab')
     def _(event):
         event.app.layout.focus_next()
-
     @kb.add('s-tab')
     def _(event):
         event.app.layout.focus_previous()
-
     @kb.add('c-c')
     def _(event):
         raise KeyboardInterrupt
+    @kb.add("c-e")
+    def _(event):
+        app().exit()
     return kb
 

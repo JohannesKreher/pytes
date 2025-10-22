@@ -8,6 +8,7 @@ def write_a_note():
         write_app = ui.apps.write_a_note_app(result["theme"], result["title"], result["content"])
         ui.c()
         result = write_app.run()
+        if not result: return
         if not result["theme"] or not result["title"] or not result["content"]:
             continue
 
@@ -27,6 +28,7 @@ def update_a_note():
         read_app = ui.apps.edit_a_note_app(new_note["theme"], new_note["title"], new_note["content"])
         ui.c()
         new_note = read_app.run()
+        if not new_note: return
         if new_note["theme"] and new_note["title"] and new_note["content"]:
             db_manager.update_note(id, new_note["theme"], new_note["title"], new_note["content"])
             break
