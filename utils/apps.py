@@ -71,14 +71,24 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
             "content": content.text.strip()
         })
     )
+    # _______ layout _____
+    def get_curr_edit_mode():
+        if edit_mode == "EMACS": text = edit_mode
+        else: text = f"VI - {app.vi_state.input_mode.name}"
+        return text
+    curr_mode_info = VSplit([
+        Label(text="Mode: ", width=Dimension.exact(6)),
+        Window(content=FormattedTextControl(text=lambda: get_curr_edit_mode()), width=Dimension.exact(16))
+    ])
+    tail_line = VSplit([curr_mode_info, save_changes])
 
-    layout = HSplit([Frame(body=theme),
+    root = HSplit([Frame(body=theme),
                      Frame(body=title),
                      Frame(body=content),
-                     save_changes])
+                     tail_line,])
 
     kb = keybinds_template(lambda: get_app())
-    app = Application(layout=Layout(layout), mouse_support=True, key_bindings=kb, editing_mode=conf_edit_mode)
+    app = Application(layout=Layout(root), mouse_support=True, key_bindings=kb, editing_mode=conf_edit_mode)
     app.pre_run_callables.append(set_normal_mode)
     return app
 
