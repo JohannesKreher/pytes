@@ -31,15 +31,13 @@ def write_a_note_app(theme_content:str ="", title_content:str ="", content_conte
     )
     #________  Layout _____
     def get_curr_edit_mode():
-        if edit_mode == "EMACS": text = edit_mode
-        else: text = f"VI - {app.vi_state.input_mode.name}"
+        if edit_mode == "EMACS":
+            text = edit_mode
+        else:
+            text = f"VI - {app.vi_state.input_mode.name}"
         return text
-    curr_mode_info = VSplit([
-        Label(text="Mode: ", width=Dimension.exact(6)),
-        Window(content=FormattedTextControl(text=lambda: get_curr_edit_mode()), width=Dimension.exact(16))
-    ])
     tail_line = VSplit([
-        curr_mode_info,
+        Label(text=f"Mode: {(lambda: get_curr_edit_mode())}", width=Dimension.exact(16)),
         submit_button,
     ])
 
@@ -76,11 +74,10 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
         if edit_mode == "EMACS": text = edit_mode
         else: text = f"VI - {app.vi_state.input_mode.name}"
         return text
-    curr_mode_info = VSplit([
-        Label(text="Mode: ", width=Dimension.exact(6)),
-        Window(content=FormattedTextControl(text=lambda: get_curr_edit_mode()), width=Dimension.exact(16))
+    tail_line = VSplit([
+        Label(text=f"Mode: {(lambda: get_curr_edit_mode())}", width=Dimension.exact(16)),
+        save_changes
     ])
-    tail_line = VSplit([curr_mode_info, save_changes])
 
     root = HSplit([Frame(body=theme),
                      Frame(body=title),
