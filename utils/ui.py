@@ -72,7 +72,9 @@ info = ("_ _ _/The Hints you ware searching for\_ _ _\n"
             "* Global keybinds:\n"
             "\t- ctrl-d -> Delete a note\n"
             "\t- ctrl-e -> Go back\n"
-            "\t- ctrl-c -> Quit\n")
+            "\t- ctrl-c -> Quit\n"
+            "\t- tab    -> Focus next"
+            "\t- s-tab  -> Focus previous ")
 
 
 

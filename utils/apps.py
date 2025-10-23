@@ -1,5 +1,5 @@
 from utils.db_manager import get_notes_by_query, delete_note
-from utils.config import search_not_by_only_one_char, edit_mode
+from utils.config import search_not_by_only_one_char, edit_mode, marker
 
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
@@ -9,10 +9,12 @@ from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, For
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
+from os import get_terminal_size
 
 if edit_mode == "EMACS":
     conf_edit_mode = EditingMode.EMACS
 else: conf_edit_mode = EditingMode.VI
+if len(marker) > 4: marker = ">"
 
 def write_a_note_app(theme_content:str ="", title_content:str ="", content_content:str =""):
     def get_app():
@@ -58,7 +60,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     theme, title, content = ttc_template(theme_content, title_content, content_content)
     def get_app():
         return app
-    def set_normal_mode():
+    def set_navigation_mode():
         app.vi_state.input_mode = app.vi_state.input_mode.NAVIGATION
 
     save_changes = Button(
@@ -69,7 +71,8 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
             "theme": theme.text.strip(),
             "title": title.text.strip(),
             "content": content.text.strip()
-        })
+        }),
+        width=16,
     )
     # _______ layout _____
     def get_curr_edit_mode():
@@ -89,7 +92,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
 
     kb = keybinds_template(lambda: get_app())
     app = Application(layout=Layout(root), mouse_support=True, key_bindings=kb, editing_mode=conf_edit_mode)
-    app.pre_run_callables.append(set_normal_mode)
+    app.pre_run_callables.append(set_navigation_mode)
     return app
 
 def live_note_search_app():
@@ -110,7 +113,7 @@ def live_note_search_app():
     def opt_lines():
         lines = []
         for i, opt in enumerate(options):
-            line = "        > " if i == selected_index[0] else "         "
+            line = f"     {marker.rjust(4)} " if i == selected_index[0] else "         "
             lines.append(line + opt)
         return "\n".join(lines)
     def toggle_dropdown():
@@ -158,13 +161,30 @@ def live_note_search_app():
         app.invalidate()
 
     def mark_lines(i, note):
+        th_len = 13
+        ti_len = 17
+        co_len = 22
         id, theme, title, content = note
-        if i == current_position[0]: position_marker = "   > "
+        if i == current_position[0]: position_marker = f"{marker.rjust(4)} "
         else: position_marker = "    "
-        theme_label = Label(text=f"{position_marker}Theme: {theme}", width=Dimension.exact(20))  # theme, title still neet a max length
-        title_label = Label(text=f"Title: {title}", width=Dimension.exact(25))
-        content_label = Label(text=f"content: {content}", width=Dimension.exact(35))
-        note_line = VSplit([theme_label, title_label, content_label])
+
+        s_theme, s_title, s_content = [
+            (x[:l]+"..." if len(x)>l else x)
+            for x, l in [(theme, th_len), (title, ti_len), (content, co_len)]
+        ]
+
+        theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(28))
+        title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(28))
+        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(35))
+        split_label = Label(text="|", width=Dimension.exact(1))
+        note_line = VSplit([
+            Label(text=f"{i+1}.", width=Dimension.exact(3)),
+            theme_label,
+            split_label,
+            title_label,
+            split_label,
+            content_label
+        ])
         result_container.children.append(note_line)
 
     search_text_area.buffer.on_text_changed += search_text
@@ -224,17 +244,18 @@ def live_note_search_app():
                 for i, note in enumerate(result_notes_list[0]):
                     mark_lines(i, note)
                 app.invalidate()
-
     # __________ root _____
+    dummy_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
-        Label("", width=Dimension.exact(10)),           # dummy container
+        dummy_line,
         edit_title,
         dropdown_label,
         dropdown_menu_line,
-        Label("", width=Dimension.exact(10)),           # dummy container
+        dummy_line,
         search_line,
-        Label("", width=Dimension.exact(10)),           # dummy container
+        dummy_line,
         Label("Results:", width=Dimension.exact(10)),
+        Label(text="-"*get_terminal_size().columns),
         result_container,
     ])
 
@@ -255,7 +276,6 @@ def ttc_template(theme_content:str = "",
 
 def keybinds_template(app):      # app = app returning function
     kb = KeyBindings()
-
     @kb.add('tab')
     def _(event):
         event.app.layout.focus_next()
