@@ -9,7 +9,7 @@ from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, For
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
-from os import get_terminal_size
+import signal
 
 if edit_mode == "EMACS":
     conf_edit_mode = EditingMode.EMACS
@@ -96,9 +96,13 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     return app
 
 def live_note_search_app():
-    def get_app():
-        return app
-    kb = keybinds_template(lambda: get_app())
+    def on_resize(useless, shit):
+        result_container.children.clear()
+        for i, note in enumerate(result_notes_list[0]):
+            mark_lines(i, note)
+        app.invalidate()
+    def get_t_width():
+        return app.output.get_size().columns
     edit_title = VSplit([
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
@@ -161,21 +165,26 @@ def live_note_search_app():
         app.invalidate()
 
     def mark_lines(i, note):
-        th_len = 13
-        ti_len = 17
-        co_len = 22
         id, theme, title, content = note
         if i == current_position[0]: position_marker = f"{marker.rjust(4)} "
         else: position_marker = "    "
+
+        t_wid = get_t_width() - 5
+        th_wid = int(t_wid / 100 * 30)
+        co_wid = int(t_wid / 100 * 38)
+
+        th_len = th_wid - 15 # 15 = len(prompt)
+        ti_len = th_wid - 11
+        co_len = co_wid - 13
 
         s_theme, s_title, s_content = [
             (x[:l]+"..." if len(x)>l else x)
             for x, l in [(theme, th_len), (title, ti_len), (content, co_len)]
         ]
 
-        theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(28))
-        title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(28))
-        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(35))
+        theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(th_wid)) # 30.7692   28
+        title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(th_wid)) # 30.7692   28
+        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(co_wid)) # 38.4615    35
         split_label = Label(text="|", width=Dimension.exact(1))
         note_line = VSplit([
             Label(text=f"{i+1}.", width=Dimension.exact(3)),
@@ -186,10 +195,15 @@ def live_note_search_app():
             content_label
         ])
         result_container.children.append(note_line)
+        signal.signal(signal.SIGWINCH, on_resize) # catch resize signals
 
     search_text_area.buffer.on_text_changed += search_text
 
 # _______ key binds____
+    kb = KeyBindings()
+    @kb.add('c-c')
+    def _(event):
+        raise KeyboardInterrupt
     @kb.add("enter")
     def _(event):
         if current_position[0] in range(0, len(result_container.children)):
@@ -244,7 +258,9 @@ def live_note_search_app():
                 for i, note in enumerate(result_notes_list[0]):
                     mark_lines(i, note)
                 app.invalidate()
+
     # __________ root _____
+
     dummy_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
         dummy_line,
@@ -255,15 +271,14 @@ def live_note_search_app():
         search_line,
         dummy_line,
         Label("Results:", width=Dimension.exact(10)),
-        Label(text="-"*get_terminal_size().columns),
+        Label(text=lambda: "-"* get_t_width()),
         result_container,
     ])
 
-    app = Application(layout=Layout(root), key_bindings=kb , editing_mode=EditingMode.VI) # temporary false
+    app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI)
     return app
 
 #________Templates _______
-
 def ttc_template(theme_content:str = "",
                  title_content:str = "",
                  content_content:str = "",

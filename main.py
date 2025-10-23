@@ -2,7 +2,6 @@ from utils import db_manager, crypto, logic
 from utils.ui import menu, register_screen, login_screen, print_info
 from utils.config import db_path, set_password, get_password
 
-import test
 
 def login()->bytes:
     if not db_path.is_file():
