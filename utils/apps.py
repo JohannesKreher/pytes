@@ -201,6 +201,9 @@ def live_note_search_app():
 
 # _______ key binds____
     kb = KeyBindings()
+    @kb.add("c-f")
+    def _(event):
+        print(scrollable_result_container.vertical_scroll, len(result_container.children))
     @kb.add('c-c')
     def _(event):
         raise KeyboardInterrupt
@@ -250,7 +253,9 @@ def live_note_search_app():
                 app.invalidate()
     @kb.add("down")
     def _(event):
-        scrollable_result_container.vertical_scroll += 1
+        scroll_pos = scrollable_result_container.vertical_scroll
+
+        scrollable_result_container.vertical_scroll += 1 if not scroll_pos+scrollable_result_container.height == len(result_container.children) else 0
         if dropdown_open[0]:
             selected_index[0] = (selected_index[0] + 1) % len(options)
         else:
@@ -264,7 +269,7 @@ def live_note_search_app():
                 app.invalidate()
 
     # __________ root _____
-    scrollable_result_container = ScrollablePane(result_container)
+    scrollable_result_container = ScrollablePane(result_container, height=14)
     dummy_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
         dummy_line,
