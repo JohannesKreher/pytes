@@ -5,7 +5,7 @@ from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.vi_state import InputMode
-from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, FormattedTextControl
+from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, FormattedTextControl, ScrollablePane
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
@@ -234,6 +234,9 @@ def live_note_search_app():
             delete_note(id)
     @kb.add("up")
     def _(event):
+        scroll_pos = scrollable_result_container.vertical_scroll
+
+        scrollable_result_container.vertical_scroll -= 1 if scroll_pos > 0 else 0
         if dropdown_open[0]:
             selected_index[0] = (selected_index[0] - 1) % len(options)
         else:
@@ -247,6 +250,7 @@ def live_note_search_app():
                 app.invalidate()
     @kb.add("down")
     def _(event):
+        scrollable_result_container.vertical_scroll += 1
         if dropdown_open[0]:
             selected_index[0] = (selected_index[0] + 1) % len(options)
         else:
@@ -260,7 +264,7 @@ def live_note_search_app():
                 app.invalidate()
 
     # __________ root _____
-
+    scrollable_result_container = ScrollablePane(result_container)
     dummy_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
         dummy_line,
@@ -272,10 +276,10 @@ def live_note_search_app():
         dummy_line,
         Label("Results:", width=Dimension.exact(10)),
         Label(text=lambda: "-"* get_t_width()),
-        result_container,
+        scrollable_result_container,
     ])
 
-    app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI)
+    app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI, mouse_support=True)
     return app
 
 #________Templates _______
