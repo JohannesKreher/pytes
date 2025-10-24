@@ -131,9 +131,7 @@ def live_note_search_app():
     dropdown_window = Window(content=FormattedTextControl(text=lambda: opt_lines()), height=len(options))
     dropdown_menu = ConditionalContainer(content=dropdown_window, filter=Condition(lambda: dropdown_open[0]))
 
-    dropdown_menu_line = VSplit([
-        dropdown_menu,
-    ])
+    dropdown_menu_line = VSplit([dropdown_menu])
 #__________ search logic __________
     search_text_area = TextArea(text="",width=Dimension.exact(20))
 
@@ -269,11 +267,11 @@ def live_note_search_app():
     def _(event):
         scroll = scrollable_result_container
 
-        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll.height == len(
-            result_container.children) else 0
+        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + 13  == len(
+            result_container.children) else 0 # 13 = scroll.height
 
     # __________ root _____
-    scrollable_result_container = ScrollablePane(result_container, height=14)
+    scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(16-len(options)))
     dummy_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
         dummy_line,
