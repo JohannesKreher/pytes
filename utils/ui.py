@@ -16,7 +16,7 @@ def menu():
     c()
     print(RANDC + logo + ENDC)
     print("1 -> Write a note")
-    print("2 -> Edit a note")
+    print("2 -> Search in notes")
     print("3 -> Decrypt-db")
     print("4 -> Hints")
     print("5 -> Exit")
@@ -78,7 +78,7 @@ info = ("_ _ _/The Hints you ware searching for\_ _ _\n"
         "\n"
         "* Search-pane-keybindings:\n"
         "\n"
-        "\t- ENTER     -> Select Filter/Select entry\n"
+        "\t- ENTER     -> Select filter/entry\n"
         "\t- UP/DOWN   -> Move Up/Down\n"
         "\t- CTRL-k/j  -> Scroll Up/Down\n")
 

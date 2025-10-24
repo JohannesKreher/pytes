@@ -4,7 +4,6 @@ from utils.config import search_not_by_only_one_char, edit_mode, marker
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.vi_state import InputMode
 from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, FormattedTextControl, ScrollablePane
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label
 from prompt_toolkit.layout.containers import ConditionalContainer
