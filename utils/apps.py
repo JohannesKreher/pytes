@@ -237,9 +237,6 @@ def live_note_search_app():
             delete_note(id)
     @kb.add("up")
     def _(event):
-        scroll_pos = scrollable_result_container.vertical_scroll
-
-        scrollable_result_container.vertical_scroll -= 1 if scroll_pos > 0 else 0
         if dropdown_open[0]:
             selected_index[0] = (selected_index[0] - 1) % len(options)
         else:
@@ -253,9 +250,6 @@ def live_note_search_app():
                 app.invalidate()
     @kb.add("down")
     def _(event):
-        scroll_pos = scrollable_result_container.vertical_scroll
-
-        scrollable_result_container.vertical_scroll += 1 if not scroll_pos+scrollable_result_container.height == len(result_container.children) else 0
         if dropdown_open[0]:
             selected_index[0] = (selected_index[0] + 1) % len(options)
         else:
@@ -267,6 +261,17 @@ def live_note_search_app():
                 for i, note in enumerate(result_notes_list[0]):
                     mark_lines(i, note)
                 app.invalidate()
+    @kb.add("c-k")
+    def _(event):
+        scroll = scrollable_result_container
+
+        scroll.vertical_scroll -= 1 if scroll.vertical_scroll > 0 else 0
+    @kb.add("c-j")
+    def _(event):
+        scroll = scrollable_result_container
+
+        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll.height == len(
+            result_container.children) else 0
 
     # __________ root _____
     scrollable_result_container = ScrollablePane(result_container, height=14)
@@ -284,7 +289,7 @@ def live_note_search_app():
         scrollable_result_container,
     ])
 
-    app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI, mouse_support=True)
+    app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI)
     return app
 
 #________Templates _______

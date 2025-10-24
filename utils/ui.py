@@ -8,7 +8,7 @@ from utils import apps
 def print_info():
     c()
     print(info)
-    input("\npress enter to continue...")
+    input("\nPress enter to continue...")
 
 #_________________ login / register / menu
 
@@ -65,16 +65,22 @@ bcolors = {
 ENDC = '\033[0m'
 RANDC = choice([c for n, c in bcolors.items()])
 info = ("_ _ _/The Hints you ware searching for\_ _ _\n"
-            "\n"
-            "* There is a smale conf file on utils/config.py\n"
-            "* Support on all inputs fields VIM like movement (on default view in config).\n"
-            "\n"
-            "* Global keybinds:\n"
-            "\t- ctrl-d -> Delete a note\n"
-            "\t- ctrl-e -> Go back\n"
-            "\t- ctrl-c -> Quit\n"
-            "\t- tab    -> Focus next"
-            "\t- s-tab  -> Focus previous ")
+        "\n"
+        "* There is a smale config file on utils/config.py\n"
+        "* Default is VI-movement (you can change to EMACS in config).\n"
+        "\n"
+        "* Global-keybindings:\n"
+        "\t- CTRL-d    -> Delete a note\n"
+        "\t- CTRL-e    -> Go back\n"
+        "\t- CTRL-c    -> Quit\n"
+        "\t- TAB       -> Focus next\n"
+        "\t- SHIFT-TAB -> Focus previous\n"
+        "\n"
+        "* Search-pane-keybindings:\n"
+        "\n"
+        "\t- ENTER     -> Select Filter/Select entry\n"
+        "\t- UP/DOWN   -> Move Up/Down\n"
+        "\t- CTRL-k/j  -> Scroll Up/Down\n")
 
 
 
