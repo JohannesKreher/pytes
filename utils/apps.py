@@ -8,7 +8,7 @@ from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, For
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label, Checkbox
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
-import signal
+import signal, os
 
 if edit_mode == "EMACS":
     conf_edit_mode = EditingMode.EMACS
@@ -97,12 +97,16 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
 def live_note_search_app():
  #______ init-part ______
     def on_resize(useless, shit):
+        nonlocal scroll_height
         result_container.children.clear()
         for i, note in enumerate(result_notes_list[0]):
             mark_lines(i, note)
+
+        scroll_height = get_t_width()[1]-10 if get_t_width()[1]-10 > 0 else 0
+        scrollable_result_container.height = scroll_height
         app.invalidate()
     def get_t_width():
-        return app.output.get_size().columns
+        return os.get_terminal_size().columns, os.get_terminal_size().lines
     edit_title = VSplit([
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
@@ -114,7 +118,7 @@ def live_note_search_app():
     dropdown_label = Label(text=f"Filter: [{current_opt[0]}]▼", width=Dimension.exact(20))
     dropdown_open = [False]
 
-    scroll_height = 16
+    scroll_height = get_t_width()[1]-10
     snbn_condition = [False]
 # _________  dropdown menu_________
     def opt_lines():
@@ -170,7 +174,7 @@ def live_note_search_app():
         if i == current_position[0]: position_marker = f"{marker.rjust(4)} "
         else: position_marker = "    "
 
-        t_wid = get_t_width() - 5
+        t_wid = get_t_width()[0] - 5
         th_wid = int(t_wid / 100 * 30)
         co_wid = int(t_wid / 100 * 38)
 
@@ -306,13 +310,9 @@ def live_note_search_app():
             snbn_condition[0] = False
             app.layout.focus_previous()
 
-
 # ______________ select note by num. ___________
-
     sct_n_by_num_textarea = TextArea(prompt="/: ")
-
-    sct_n_by_num_conditional_container = ConditionalContainer(content=sct_n_by_num_textarea, filter=Condition(lambda: snbn_condition[0]))
-
+    sct_n_by_num_container = ConditionalContainer(content=sct_n_by_num_textarea, filter=Condition(lambda: snbn_condition[0]))
     # __________ root _____
     scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(scroll_height))
     free_line = Label("", width=Dimension.exact(10))         # dummy container
@@ -325,9 +325,9 @@ def live_note_search_app():
         search_line,
         free_line,
         Label("Results:", width=Dimension.exact(10)),
-        Label(text=lambda: "-"* get_t_width()),
+        Label(text=lambda: "-"* get_t_width()[0]),
         scrollable_result_container,
-        sct_n_by_num_conditional_container,
+        sct_n_by_num_container,
     ])
 
     app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI)
