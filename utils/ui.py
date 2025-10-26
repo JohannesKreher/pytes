@@ -79,7 +79,7 @@ info = ("_ _ _/The Hints you ware searching for\_ _ _\n"
         "* Search-pane-keybindings:\n"
         "\n"
         "\t- ENTER     -> Select filter/entry\n"
-        "\t- /         -> Select by number\n"
+        "\t- /: DIGIT  -> Select by number\n"
         "\t- UP/DOWN   -> Move Up/Down\n"
         "\t- CTRL-k/j  -> Scroll Up/Down\n")
 
