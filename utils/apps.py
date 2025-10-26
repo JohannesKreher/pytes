@@ -95,6 +95,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     return app
 
 def live_note_search_app():
+ #______ init-part ______
     def on_resize(useless, shit):
         result_container.children.clear()
         for i, note in enumerate(result_notes_list[0]):
@@ -106,13 +107,15 @@ def live_note_search_app():
         Label("", width=Dimension.exact(10)),         # dummy container
         Frame(body=Label(" Live Note Search"), width=Dimension.exact(20)),
     ])
-# _________  dropdown menu_________
+
     options = ["Theme", "Title", "Content"]
     selected_index = [0]
     current_opt = [options[selected_index[0]]]
     dropdown_label = Label(text=f"Filter: [{current_opt[0]}]▼", width=Dimension.exact(20))
     dropdown_open = [False]
 
+    scroll_height = 16
+# _________  dropdown menu_________
     def opt_lines():
         lines = []
         for i, opt in enumerate(options):
@@ -200,7 +203,7 @@ def live_note_search_app():
     kb = KeyBindings()
     @kb.add("c-f")
     def _(event):
-        print(scrollable_result_container.vertical_scroll, len(result_container.children))
+        print(scroll_height)
     @kb.add('c-c')
     def _(event):
         raise KeyboardInterrupt
@@ -215,10 +218,15 @@ def live_note_search_app():
                 "content":content,
             })
         else:
+            nonlocal scroll_height
             if not dropdown_open[0]:
+                scroll_height = scroll_height-len(options)
+                scrollable_result_container.height = Dimension.exact(scroll_height)
                 toggle_dropdown()
             else:
                 select_option()
+                scroll_height = scroll_height+len(options)
+                scrollable_result_container.height = Dimension.exact(scroll_height)
     @kb.add("c-e")
     def _(event):
         app.exit()
@@ -267,20 +275,20 @@ def live_note_search_app():
     def _(event):
         scroll = scrollable_result_container
 
-        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + 13  == len(
-            result_container.children) else 0 # 13 = scroll.height
+        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll_height  == len(
+            result_container.children) else 0
 
     # __________ root _____
-    scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(16-len(options)))
-    dummy_line = Label("", width=Dimension.exact(10))         # dummy container
+    scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(scroll_height))
+    free_line = Label("", width=Dimension.exact(10))         # dummy container
     root = HSplit([
-        dummy_line,
+        free_line,
         edit_title,
         dropdown_label,
         dropdown_menu_line,
-        dummy_line,
+        free_line,
         search_line,
-        dummy_line,
+        free_line,
         Label("Results:", width=Dimension.exact(10)),
         Label(text=lambda: "-"* get_t_width()),
         scrollable_result_container,
