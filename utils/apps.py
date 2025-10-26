@@ -5,7 +5,7 @@ from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, FormattedTextControl, ScrollablePane
-from prompt_toolkit.widgets import TextArea, Button, Frame, Label
+from prompt_toolkit.widgets import TextArea, Button, Frame, Label, Checkbox
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
 import signal
@@ -115,6 +115,7 @@ def live_note_search_app():
     dropdown_open = [False]
 
     scroll_height = 16
+    snbn_condition = [False]
 # _________  dropdown menu_________
     def opt_lines():
         lines = []
@@ -217,6 +218,24 @@ def live_note_search_app():
                 "title":title,
                 "content":content,
             })
+
+        elif app.layout.current_window == sct_n_by_num_textarea.window:
+            if sct_n_by_num_textarea.text.strip().isdigit():
+                sct_n_by_num_textarea.text = sct_n_by_num_textarea.text.strip()
+                for i, note in enumerate(result_notes_list[0]):
+                    id, theme, title, content = note
+                    print(f"id= {i+1} | text input= {sct_n_by_num_textarea.text}")
+                    if str(i+1) == sct_n_by_num_textarea.text:
+                        app.exit(result={
+                            "id": id,
+                            "theme": theme,
+                            "title": title,
+                            "content": content,
+                        })
+                sct_n_by_num_textarea.text = "NOT FOUND"
+            else:
+                sct_n_by_num_textarea.text = "DIGITS ONLY"
+
         else:
             nonlocal scroll_height
             if not dropdown_open[0]:
@@ -269,14 +288,30 @@ def live_note_search_app():
     @kb.add("c-k")
     def _(event):
         scroll = scrollable_result_container
-
         scroll.vertical_scroll -= 1 if scroll.vertical_scroll > 0 else 0
     @kb.add("c-j")
     def _(event):
         scroll = scrollable_result_container
-
         scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll_height  == len(
             result_container.children) else 0
+    @kb.add("/")
+    def _(event):
+        nonlocal scroll_height, snbn_condition, scrollable_result_container
+        if not snbn_condition[0]:
+            scroll_height = scroll_height-1
+            scrollable_result_container.height = Dimension.exact(scroll_height)
+            snbn_condition[0] = True
+            app.layout.focus(sct_n_by_num_textarea)
+        else:
+            snbn_condition[0] = False
+            app.layout.focus_previous()
+
+
+# ______________ select note by num. ___________
+
+    sct_n_by_num_textarea = TextArea(prompt="/: ")
+
+    sct_n_by_num_conditional_container = ConditionalContainer(content=sct_n_by_num_textarea, filter=Condition(lambda: snbn_condition[0]))
 
     # __________ root _____
     scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(scroll_height))
@@ -292,6 +327,7 @@ def live_note_search_app():
         Label("Results:", width=Dimension.exact(10)),
         Label(text=lambda: "-"* get_t_width()),
         scrollable_result_container,
+        sct_n_by_num_conditional_container,
     ])
 
     app = Application(layout=Layout(root), key_bindings=kb, editing_mode=EditingMode.VI)
