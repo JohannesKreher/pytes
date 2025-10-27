@@ -167,7 +167,6 @@ def live_note_search_app():
 
         for i, note in enumerate(result_list):
             mark_lines(i, note)
-        app.invalidate()
 
     def mark_lines(i, note):
         id, theme, title, content = note
@@ -258,7 +257,6 @@ def live_note_search_app():
             result_container.children.clear()
             for i, note in enumerate(result_notes_list[0]):
                 mark_lines(i, note)
-            app.invalidate()
             delete_note(id)
     @kb.add("up")
     def _(event):
@@ -272,7 +270,6 @@ def live_note_search_app():
                 result_container.children.clear()
                 for i, note in enumerate(result_notes_list[0]):
                     mark_lines(i, note)
-                app.invalidate()
     @kb.add("down")
     def _(event):
         if dropdown_open[0]:
@@ -285,7 +282,6 @@ def live_note_search_app():
                 result_container.children.clear()
                 for i, note in enumerate(result_notes_list[0]):
                     mark_lines(i, note)
-                app.invalidate()
     @kb.add("c-k")
     def _(event):
         scroll = scrollable_result_container
