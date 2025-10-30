@@ -1,6 +1,5 @@
 
 from utils import ui, db_manager
-from utils.config import get_password
 
 def write_a_note():
     result = {"theme": "", "title": "", "content": ""}
@@ -16,22 +15,24 @@ def write_a_note():
         break
 
 def update_a_note():
-    ui.c()
-    search_app = ui.apps.live_note_search_app()
-    target_note = search_app.run()
-    if not target_note: return
-    id = target_note["id"]
-
-    new_note = {"theme": target_note["theme"], "title": target_note["title"], "content": target_note["content"]}
-
     while True:
-        read_app = ui.apps.edit_a_note_app(new_note["theme"], new_note["title"], new_note["content"])
         ui.c()
-        new_note = read_app.run()
-        if not new_note: return
-        if new_note["theme"] and new_note["title"] and new_note["content"]:
-            db_manager.update_note(id, new_note["theme"], new_note["title"], new_note["content"])
-            break
+        search_app = ui.apps.live_note_search_app()
+        target_note = search_app.run()
+        if not target_note: return
+        id = target_note["id"]
+
+        new_note = {"theme": target_note["theme"], "title": target_note["title"], "content": target_note["content"]}
+
+        while True:
+            read_app = ui.apps.edit_a_note_app(new_note["theme"], new_note["title"], new_note["content"])
+            ui.c()
+            new_note = read_app.run()
+            if not new_note: break
+            if new_note["theme"] and new_note["title"] and new_note["content"]:
+                db_manager.update_note(id, new_note["theme"], new_note["title"], new_note["content"])
+                return
+
 
 
 

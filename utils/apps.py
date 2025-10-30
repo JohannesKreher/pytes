@@ -188,7 +188,7 @@ def live_note_search_app():
 
         theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(th_wid)) # 30.7692   28
         title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(th_wid)) # 30.7692   28
-        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(co_wid)) # 38.4615    35
+        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(co_wid), ) # 38.4615    35
         split_label = Label(text="|", width=Dimension.exact(1))
         note_line = VSplit([
             Label(text=f"{i+1}.", width=Dimension.exact(3)),
@@ -197,7 +197,7 @@ def live_note_search_app():
             title_label,
             split_label,
             content_label
-        ])
+        ], height=Dimension.exact(1))
         result_container.children.append(note_line)
         signal.signal(signal.SIGWINCH, on_resize) # catch resize signals
 
@@ -290,7 +290,7 @@ def live_note_search_app():
     @kb.add("c-j")
     def _(event):
         scroll = scrollable_result_container
-        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll_height  == len(
+        scroll.vertical_scroll += 1 if not scroll.vertical_scroll + scroll_height  >= len(
             result_container.children) else 0
     @kb.add("/")
     def _(event):
