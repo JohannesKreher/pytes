@@ -246,6 +246,7 @@ def live_note_search_app():
                 select_option()
                 scroll_height = scroll_height+len(options)
                 scrollable_result_container.height = Dimension.exact(scroll_height)
+                search_text("unnecessary")
     @kb.add("c-e")
     def _(event):
         app.exit()
