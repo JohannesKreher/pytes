@@ -302,6 +302,7 @@ def live_note_search_app():
             app.layout.focus(sct_n_by_num_textarea)
         else:
             snbn_condition[0] = False
+            scroll_height = scroll_height+1
             app.layout.focus_previous()
 
 # ______________ select note by num. ___________
