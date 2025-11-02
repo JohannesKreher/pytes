@@ -121,6 +121,7 @@ def live_note_search_app():
 
     scroll_height = get_t_size()[1]-10
     snbn_condition = [False]
+    result_number = 0
 # _________  dropdown menu_________
     def opt_lines():
         lines = []
@@ -154,6 +155,7 @@ def live_note_search_app():
 
     result_container = HSplit([])
     def search_text(buffer):
+        nonlocal result_number
         result_container.children.clear()
         query = search_text_area.text
         if len(query) <= 1 and search_not_by_only_one_char:
@@ -162,6 +164,8 @@ def live_note_search_app():
         if query:
             result_list = get_notes_by_query(query, opt[0])
         else: result_list = []
+        result_number = len(result_list)
+        result_info.text = f"Results: {result_number}"
         result_notes_list.clear()
         result_notes_list.append(result_list)
 
@@ -311,6 +315,7 @@ def live_note_search_app():
     # __________ root _____
     scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(scroll_height))
     free_line = Label("", width=Dimension.exact(10))         # dummy container
+    result_info = Label(f"Results: {result_number}", width=Dimension.exact(10))
     root = HSplit([
         free_line,
         edit_title,
@@ -319,7 +324,7 @@ def live_note_search_app():
         free_line,
         search_line,
         free_line,
-        Label("Results:", width=Dimension.exact(10)),
+        result_info,
         Label(text=lambda: "-"* get_t_size()[0]),
         scrollable_result_container,
         sct_n_by_num_container,
