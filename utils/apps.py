@@ -100,8 +100,7 @@ def live_note_search_app():
     def on_resize(useless, shit):
         nonlocal scroll_height
         result_container.children.clear()
-        for i, note in enumerate(result_notes_list[0]):
-            mark_lines(i, note)
+        mark_lines(result_notes_list[0])
 
         scroll_height = get_t_size()[1]-10 if get_t_size()[1]-10 > 0 else 0
         scrollable_result_container.height = scroll_height
@@ -169,40 +168,43 @@ def live_note_search_app():
         result_notes_list.clear()
         result_notes_list.append(result_list)
 
-        for i, note in enumerate(result_list):
-            mark_lines(i, note)
+        mark_lines(result_list)
 
-    def mark_lines(i, note):
-        id, theme, title, content = note
-        if i == current_position[0]: position_marker = f"{marker.rjust(4)} "
-        else: position_marker = "    "
+    def mark_lines(note_list):
+        for i, note in enumerate(note_list):
+            id, theme, title, content, modified_at  = note
+            if i == current_position[0]: position_marker = f"{marker.rjust(4)} "
+            else: position_marker = "    "
 
-        t_wid = get_t_size()[0] - 5
-        th_wid = int(t_wid / 100 * 30)
-        co_wid = int(t_wid / 100 * 38)
+            t_wid = get_t_size()[0] - 5
+            th_wid = int(t_wid / 100 * 30)
+            co_wid = int(t_wid / 100 * 38)
 
-        th_len = th_wid - 15 # 15 = len(prompt)
-        ti_len = th_wid - 11
-        co_len = co_wid - 13
+            th_len = th_wid - 15 # 15 = len(prompt)
+            ti_len = th_wid - 11
+            co_len = co_wid - 13
 
-        s_theme, s_title, s_content = [
-            (x[:l]+"..." if len(x)>l else x)
-            for x, l in [(theme, th_len), (title, ti_len), (content, co_len)]
-        ]
+            s_theme, s_title, s_content = [
+                (x[:l]+"..." if len(x)>l else x)
+                for x, l in [(theme, th_len), (title, ti_len), (content, co_len)]
+            ]
 
-        theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(th_wid)) # 30.7692   28
-        title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(th_wid)) # 30.7692   28
-        content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(co_wid), ) # 38.4615    35
-        split_label = Label(text="|", width=Dimension.exact(1))
-        note_line = VSplit([
-            Label(text=f"{i+1}.", width=Dimension.exact(3)),
-            theme_label,
-            split_label,
-            title_label,
-            split_label,
-            content_label
-        ], height=Dimension.exact(1))
-        result_container.children.append(note_line)
+            theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(10)) # 30
+            title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(10)) # 30
+            content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(10)) # 38
+            modified_label = Label(text=f"Mod: {modified_at}", width=Dimension.exact(5))
+            split_label = Label(text="|", width=Dimension.exact(1))
+            note_line = VSplit([
+                Label(text=f"{i+1}.", width=Dimension.exact(3)),
+                theme_label,
+                split_label,
+                title_label,
+                split_label,
+                content_label,
+                split_label,
+                modified_label
+            ], height=Dimension.exact(1))
+            result_container.children.append(note_line)
         signal.signal(signal.SIGWINCH, on_resize) # catch resize signals
 
     search_text_area.buffer.on_text_changed += search_text
@@ -214,8 +216,8 @@ def live_note_search_app():
         raise KeyboardInterrupt
     @kb.add("enter")
     def _(event):
-        if current_position[0] in range(0, len(result_container.children)):
-            id, theme, title, content = result_notes_list[0][current_position[0]]
+        if current_position[0] in range(0, len(result_container.children)): # select result
+            id, theme, title, content, modified_at = result_notes_list[0][current_position[0]]
             app.exit(result={
                 "id":id,
                 "theme":theme,
@@ -227,7 +229,7 @@ def live_note_search_app():
             if sct_n_by_num_textarea.text.strip().isdigit():
                 sct_n_by_num_textarea.text = sct_n_by_num_textarea.text.strip()
                 for i, note in enumerate(result_notes_list[0]):
-                    id, theme, title, content = note
+                    id, theme, title, content, modified_at = note
                     print(f"id= {i+1} | text input= {sct_n_by_num_textarea.text}")
                     if str(i+1) == sct_n_by_num_textarea.text:
                         app.exit(result={
@@ -257,11 +259,10 @@ def live_note_search_app():
     @kb.add("c-d")
     def _(event):
         if current_position[0] in range(0, len(result_container.children)):
-            id, _, _, _ = result_notes_list[0][current_position[0]]
+            id, _, _, _. _ = result_notes_list[0][current_position[0]]
             del result_notes_list[0][current_position[0]]
             result_container.children.clear()
-            for i, note in enumerate(result_notes_list[0]):
-                mark_lines(i, note)
+            mark_lines(result_notes_list[0])
             delete_note(id)
     @kb.add("up")
     def _(event):
@@ -273,8 +274,7 @@ def live_note_search_app():
             else:
                 current_position[0] = (current_position[0] - 1) % (len(result_container.children)+1)
                 result_container.children.clear()
-                for i, note in enumerate(result_notes_list[0]):
-                    mark_lines(i, note)
+                mark_lines(result_notes_list[0])
     @kb.add("down")
     def _(event):
         if dropdown_open[0]:
@@ -285,8 +285,7 @@ def live_note_search_app():
             else:
                 current_position[0] = (current_position[0] + 1) % (len(result_container.children)+1)
                 result_container.children.clear()
-                for i, note in enumerate(result_notes_list[0]):
-                    mark_lines(i, note)
+                mark_lines(result_notes_list[0])
     @kb.add("c-k")
     def _(event):
         scroll = scrollable_result_container
