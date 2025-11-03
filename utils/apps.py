@@ -10,7 +10,7 @@ from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
 from os import get_terminal_size
 from datetime import datetime
-import signal, os 
+import signal, os, time
 
 if edit_mode == "EMACS":
     conf_edit_mode = EditingMode.EMACS
@@ -98,8 +98,19 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
 
 def live_note_search_app():
  #______ init-part ______
-    def min_mod(modified_at):
-        dt = datetime.fromisoformat(modified_at)
+    def datetime_str_to_obj(dt_str_list: tuple, str_position: int)->datetime:
+        return_list = []
+        for i, sublist in enumerate(dt_str_list):
+            dt_list = []
+            for entry in sublist:
+                dt_list.append(entry)
+            dt = datetime.fromisoformat(dt_list[str_position])
+            dt_list[str_position] = dt
+            return_list.append(dt_list)
+        return_list.sort(key= lambda note: note[str_position], reverse=True)
+        return return_list
+
+    def min_mod(dt)->str:
         return dt.strftime("%d/%m/%y - %H:%M") 
 
     def on_resize(useless, shit):
@@ -168,6 +179,9 @@ def live_note_search_app():
         if query:
             result_list = get_notes_by_query(query, opt[0])
         else: result_list = []
+
+        result_list = datetime_str_to_obj(result_list, -1)
+
         result_number = len(result_list)
         result_info.text = f"Results: {result_number}"
         result_notes_list.clear()

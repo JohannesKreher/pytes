@@ -14,7 +14,6 @@ def login()->bytes:
             new_password = login_screen()
             set_password(new_password)
             if crypto.decrypt_db(get_password()):
-                input("iii")
                 db_manager.init_db(False)
                 crypto.encrypt_db(get_password())
                 break
