@@ -9,7 +9,8 @@ from prompt_toolkit.widgets import TextArea, Button, Frame, Label, Checkbox
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
 from os import get_terminal_size
-import signal, os
+from datetime import datetime
+import signal, os 
 
 if edit_mode == "EMACS":
     conf_edit_mode = EditingMode.EMACS
@@ -97,6 +98,10 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
 
 def live_note_search_app():
  #______ init-part ______
+    def min_mod(modified_at):
+        dt = datetime.fromisoformat(modified_at)
+        return dt.strftime("%d/%m/%y - %H:%M") 
+
     def on_resize(useless, shit):
         nonlocal scroll_height
         result_container.children.clear()
@@ -177,22 +182,23 @@ def live_note_search_app():
             else: position_marker = "    "
 
             t_wid = get_t_size()[0] - 5
-            th_wid = int(t_wid / 100 * 30)
-            co_wid = int(t_wid / 100 * 38)
+            th_wid = int((t_wid-17) / 100 * 30) # 17 = mod_len / 30 = assighnt length
+            co_wid = int((t_wid-17) / 100 * 38)
 
-            th_len = th_wid - 15 # 15 = len(prompt)
-            ti_len = th_wid - 11
-            co_len = co_wid - 13
-
+            th_len = th_wid 
+            ti_len = th_wid 
+            co_len = co_wid 
+            mod_len = 17 
+            
             s_theme, s_title, s_content = [
-                (x[:l]+"..." if len(x)>l else x)
-                for x, l in [(theme, th_len), (title, ti_len), (content, co_len)]
+                (x[:l]+"..." if len(x)>l else x) # -3 for ...
+                for x, l in [(theme, th_len-7), (title, ti_len-7), (content, co_len-9)] # e.g. 9 = len(prompt)
             ]
 
-            theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(10)) # 30
-            title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(10)) # 30
-            content_label = Label(text=f"Content: {s_content}", width=Dimension.exact(10)) # 38
-            modified_label = Label(text=f"Mod: {modified_at}", width=Dimension.exact(5))
+            theme_label = Label(text=f"{position_marker}Theme: {s_theme}", width=Dimension.exact(th_len)) 
+            title_label = Label(text=f"Title: {s_title}", width=Dimension.exact(ti_len)) 
+            content_label = Label(text=f"Con: {s_content}", width=Dimension.exact(co_len)) 
+            modified_label = Label(text=f"{min_mod(modified_at)}", width=Dimension.exact(mod_len))
             split_label = Label(text="|", width=Dimension.exact(1))
             note_line = VSplit([
                 Label(text=f"{i+1}.", width=Dimension.exact(3)),
