@@ -14,3 +14,10 @@ USING fts5(
     content='notes',
     content_rowid=id
 );
+
+CREATE TRIGGER [UPDATE_DT]
+    AFTER UPDATE ON notes FOR EACH ROW
+    WHEN OLD.modified_at = NEW.modified_at  OR OLD.modified_at  IS NULL
+BEGIN
+    UPDATE notes SET modified_at=CURRENT_TIMESTAMP WHERE id=NEW.id;
+END;

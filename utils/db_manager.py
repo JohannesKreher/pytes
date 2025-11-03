@@ -12,15 +12,16 @@ def decrypt_db_manually():
         raise KeyboardInterrupt
     crypto.encrypt_db(get_password())
 
-def init_db():
+def init_db(do_init: bool = True):
     global con, cur
     con = sqlite3.connect(db_path)
     cur = con.cursor()
 
-    with open('db/schema.sql') as f:
-        schema = f.read()
-    cur.executescript(schema)
-    con.commit()
+    if do_init:
+        with open('db/schema.sql') as f:
+            schema = f.read()
+        cur.executescript(schema)
+        con.commit()
 
 def add_note(theme, title, content):
     crypto.decrypt_db(get_password())
