@@ -97,7 +97,7 @@ def edit_a_note_app(theme_content:str, title_content:str, content_content:str):
     app.pre_run_callables.append(set_navigation_mode)
     return app
 
-def live_note_search_app():
+def live_note_search_app(old_positions: tuple = ([-1], "", [0]) ):
  #______ init-part ______
     def datetime_str_to_obj(dt_str_list: tuple, str_position: int)->datetime:
         return_list = []
@@ -130,7 +130,7 @@ def live_note_search_app():
     ])
 
     options = ["Theme", "Title", "Content"]
-    selected_index = [0]
+    selected_index = old_positions[2]   # default [0]
     current_opt = [options[selected_index[0]]]
     dropdown_label = Label(text=f"Filter: [{current_opt[0]}]▼", width=Dimension.exact(20))
     dropdown_open = [False]
@@ -244,6 +244,7 @@ def live_note_search_app():
                 "theme":theme,
                 "title":title,
                 "content":content,
+                "old_position": (current_position, search_text_area.text, selected_index)
             })
 
         elif app.layout.current_window == sct_n_by_num_textarea.window:
@@ -258,6 +259,7 @@ def live_note_search_app():
                             "theme": theme,
                             "title": title,
                             "content": content,
+                            "old_position": (current_position, search_text_area.text, selected_index)
                         })
                 sct_n_by_num_textarea.text = "NOT FOUND"
             else:
@@ -339,6 +341,10 @@ def live_note_search_app():
     scrollable_result_container = ScrollablePane(result_container, height=Dimension.exact(scroll_height))
     free_line = Label("", width=Dimension.exact(10))         # dummy container
     result_info = Label(f"Results: {result_number}", width=Dimension.exact(10))
+
+    current_position = old_positions[0]
+    search_text_area.text = old_positions[1]
+
     root = HSplit([
         free_line,
         edit_title,

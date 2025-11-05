@@ -15,12 +15,14 @@ def write_a_note():
         break
 
 def update_a_note():
+    old_position = ([-1], "", [0])
     while True:
         ui.c()
-        search_app = ui.apps.live_note_search_app()
+        search_app = ui.apps.live_note_search_app(old_position)
         target_note = search_app.run()
         if not target_note: return
         id = target_note["id"]
+        old_position = target_note["old_position"]
 
         new_note = {"theme": target_note["theme"], "title": target_note["title"], "content": target_note["content"]}
 
