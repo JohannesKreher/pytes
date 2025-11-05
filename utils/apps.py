@@ -8,6 +8,7 @@ from prompt_toolkit.layout import Layout, HSplit, VSplit, Dimension, Window, For
 from prompt_toolkit.widgets import TextArea, Button, Frame, Label, Checkbox
 from prompt_toolkit.layout.containers import ConditionalContainer
 from prompt_toolkit.filters import Condition
+from prompt_toolkit.shortcuts import yes_no_dialog
 from os import get_terminal_size
 from datetime import datetime
 import signal, os, time
@@ -277,13 +278,16 @@ def live_note_search_app():
     def _(event):
         app.exit()
     @kb.add("c-d")
-    def _(event):
-        if current_position[0] in range(0, len(result_container.children)):
-            id, _, _, _. _ = result_notes_list[0][current_position[0]]
-            del result_notes_list[0][current_position[0]]
-            result_container.children.clear()
-            mark_lines(result_notes_list[0])
-            delete_note(id)
+    async def _(event):
+        delete_dialog = await yes_no_dialog(text="Are you shure you want delete that note?").run_async()
+        if delete_dialog:
+            if current_position[0] in range(0, len(result_container.children)):
+                id, _, _, _, _ = result_notes_list[0][current_position[0]]
+                del result_notes_list[0][current_position[0]]
+                result_container.children.clear()
+                mark_lines(result_notes_list[0])
+                delete_note(id)
+
     @kb.add("up")
     def _(event):
         if dropdown_open[0]:
