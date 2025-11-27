@@ -1,9 +1,6 @@
 [build-system]
-requires = ['hatchling', 'prompt-toolkit', 'cryptografy']
+requires = ['hatchling']
 build-backend = 'hatchling.build'
-
-[project.scripts]
-pytes = "pytes.main:main"
 
 [project]
 name = 'pytes'
@@ -18,8 +15,12 @@ classifiers = [
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',
 ]
+dependencies = [ 'prompt-toolkit', 'cryptography']
 license = 'MIT'
 license-files = ['LICEN[CS]E*']
+
+[project.scripts]
+pytes = "pytes.main:main"
 
 [project.urls]
 Homepage = 'https://github.com/JohannesKreher/pytes'
