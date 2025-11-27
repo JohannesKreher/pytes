@@ -1,6 +1,6 @@
-from utils import db_manager, crypto, logic
-from utils.ui import menu, register_screen, login_screen, print_info
-from utils.config import db_path, set_password, get_password
+from pytes.utils import db_manager, crypto, logic
+from pytes.utils.ui import menu, register_screen, login_screen, print_info
+from pytes.utils.config import db_path, set_password, get_password
 
 
 def login()->bytes:
@@ -33,8 +33,7 @@ def run():
         elif opr == '4':
             print_info()
 
-
-if __name__ == '__main__':
+def main():
     try:
         login()
         run()

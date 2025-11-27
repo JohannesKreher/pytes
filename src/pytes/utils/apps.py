@@ -1,5 +1,5 @@
-from utils.db_manager import get_notes_by_query, delete_note
-from utils.config import search_not_by_only_one_char, edit_mode, marker
+from pytes.utils.db_manager import get_notes_by_query, delete_note
+from pytes.utils.config import search_not_by_only_one_char, edit_mode, marker
 
 from prompt_toolkit import Application
 from prompt_toolkit.enums import EditingMode

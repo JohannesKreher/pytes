@@ -1,7 +1,7 @@
 from random import choice
 from getpass import getpass
 import os
-from utils import apps
+from pytes.utils import apps
 
 
 

@@ -1,5 +1,5 @@
 
-from utils import ui, db_manager
+from pytes.utils import ui, db_manager
 
 def write_a_note():
     result = {"theme": "", "title": "", "content": ""}

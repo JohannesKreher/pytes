@@ -1,6 +1,6 @@
 from typing import Literal
-from utils import crypto
-from utils.config import db_path, get_password
+from pytes.utils import crypto
+from pytes.utils.config import db_path, get_password, schema_path
 import sqlite3
 
 def decrypt_db_manually():
@@ -18,7 +18,7 @@ def init_db(do_init: bool = True):
     cur = con.cursor()
 
     if do_init:
-        with open('db/schema.sql') as f:
+        with open(schema_path) as f:
             schema = f.read()
         cur.executescript(schema)
         con.commit()
